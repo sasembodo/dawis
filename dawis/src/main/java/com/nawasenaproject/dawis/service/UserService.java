@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.Objects;
 
 @Slf4j
@@ -38,8 +39,11 @@ public class UserService {
         }
 
         User user = new User();
+        Date timestamp = new Date(System.currentTimeMillis());
         user.setUsername(request.getUsername());
         user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
+        user.setCreatedBy(request.getUsername());
+        user.setCreatedAt(timestamp.toString());
 
         userRepository.save(user);
     }
@@ -57,6 +61,10 @@ public class UserService {
         if (Objects.nonNull(request.getPassword())) {
             user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
         }
+
+        Date timestamp = new Date(System.currentTimeMillis());
+        user.setModifiedBy(user.getModifiedBy());
+        user.setModifiedAt(timestamp.toString());
 
         userRepository.save(user);
 

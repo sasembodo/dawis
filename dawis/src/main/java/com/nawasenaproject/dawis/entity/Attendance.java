@@ -19,6 +19,7 @@ public class Attendance {
 
     private String date;
 
+    @Column(name = "special_wage")
     private int specialWage;
 
     private int mandays;
@@ -26,6 +27,18 @@ public class Attendance {
     private int bonuses;
 
     private int advances;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @Column(name = "created_at")
+    private String createdAt;
+
+    @Column(name = "modified_by")
+    private String modifiedBy;
+
+    @Column(name = "modified_at")
+    private String modifiedAt;
 
     @Column(name = "paid_status")
     private String paidStatus;

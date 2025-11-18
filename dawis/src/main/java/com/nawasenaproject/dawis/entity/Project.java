@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 
 @Getter
 @Setter
@@ -31,14 +30,26 @@ public class Project {
 
     private int status;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
-
     @Column(name = "start_date")
     private String startDate;
 
     @Column(name = "finish_date")
     private String finishDate;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @Column(name = "created_at")
+    private String createdAt;
+
+    @Column(name = "modified_by")
+    private String modifiedBy;
+
+    @Column(name = "modified_at")
+    private String modifiedAt;
 
     @ManyToOne
     @JoinColumn(name = "username", referencedColumnName = "username")
