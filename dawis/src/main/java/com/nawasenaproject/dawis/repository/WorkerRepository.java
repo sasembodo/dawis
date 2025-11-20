@@ -1,17 +1,20 @@
 package com.nawasenaproject.dawis.repository;
 
+import com.nawasenaproject.dawis.entity.User;
 import com.nawasenaproject.dawis.entity.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-import java.awt.print.Pageable;
-import java.util.List;
+import java.util.Optional;
 
-public interface WorkerRepository extends JpaRepository<Worker, String> {
+public interface WorkerRepository extends JpaRepository<Worker, String>, JpaSpecificationExecutor<Worker> {
 
     @Query(
             value = "SELECT nip FROM workers ORDER BY nip DESC LIMIT 1",
             nativeQuery = true
     )
     String findLatestNip();
+
+    Optional<Worker> findFirstByUserAndId(User user, String id);
 }

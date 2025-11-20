@@ -63,7 +63,7 @@ public class UserService {
         }
 
         Date timestamp = new Date(System.currentTimeMillis());
-        user.setModifiedBy(user.getModifiedBy());
+        user.setModifiedBy(user.getUsername());
         user.setModifiedAt(timestamp.toString());
 
         userRepository.save(user);
