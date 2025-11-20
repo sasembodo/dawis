@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Service
@@ -47,7 +48,7 @@ public class AuthService {
     }
 
     private Long next30Days(){
-        return System.currentTimeMillis() + (1000 * 60 * 24 * 30);
+        return System.currentTimeMillis() + Duration.ofDays(30).toMillis();
     }
 
     @Transactional
