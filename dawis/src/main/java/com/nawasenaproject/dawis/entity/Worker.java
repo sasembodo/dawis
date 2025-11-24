@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,7 +25,7 @@ public class Worker {
     private String nip;
 
     @Column(name = "recruit_date")
-    private String recruitDate;
+    private LocalDate recruitDate;
 
     private String position;
 
@@ -39,13 +42,13 @@ public class Worker {
     private String createdBy;
 
     @Column(name = "created_at")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "modified_by")
     private String modifiedBy;
 
     @Column(name = "modified_at")
-    private String modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @OneToOne(mappedBy = "worker")
     private ProjectWorker projectWorker;

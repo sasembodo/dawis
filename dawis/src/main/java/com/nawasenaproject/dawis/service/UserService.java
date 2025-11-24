@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -38,12 +40,11 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exist!");
         }
 
-        User user = new User();
-        Date timestamp = new Date(System.currentTimeMillis());
+        User user = new User();;
         user.setUsername(request.getUsername());
         user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
         user.setCreatedBy(request.getUsername());
-        user.setCreatedAt(timestamp.toString());
+        user.setCreatedAt(LocalDateTime.now());
 
         userRepository.save(user);
     }
@@ -62,9 +63,9 @@ public class UserService {
             user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
         }
 
-        Date timestamp = new Date(System.currentTimeMillis());
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         user.setModifiedBy(user.getUsername());
-        user.setModifiedAt(timestamp.toString());
+        user.setModifiedAt(LocalDateTime.now());
 
         userRepository.save(user);
 

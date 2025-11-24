@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,13 +35,12 @@ public class WorkerService {
     public WorkerResponse create(User user, CreateWorkerRequest request){
         validationService.validate(request);
 
-        String recruitDate = DateUtil.formatRecruitDate(System.currentTimeMillis());
-        String nip = GenerateUtil.nipGenerator(workerRepository.findLatestNip(), System.currentTimeMillis());
+        String nip = GenerateUtil.nipGenerator(workerRepository.findLatestNip());
 
         Worker worker = new Worker();
         worker.setId(UUID.randomUUID().toString());
         worker.setName(request.getName());
-        worker.setRecruitDate(recruitDate);
+        worker.setRecruitDate(LocalDate.now());
         worker.setNip(nip);
         worker.setPosition(request.getPosition());
         worker.setWage(request.getWage());
@@ -49,7 +49,7 @@ public class WorkerService {
 
         Date timestamp = new Date(System.currentTimeMillis());
         worker.setCreatedBy(user.getUsername());
-        worker.setCreatedAt(timestamp.toString());
+        worker.setCreatedAt(LocalDateTime.now());
 
         workerRepository.save(worker);
 
@@ -66,7 +66,7 @@ public class WorkerService {
     @Transactional(readOnly = true)
     public WorkerResponse get(User user, String id){
         Worker worker = workerRepository.findFirstByUserAndId(user, id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data pekerja tersebut tidak ada !"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker is not found !"));
 
         return WorkerResponse.builder()
                 .id(worker.getId())
@@ -84,7 +84,7 @@ public class WorkerService {
 
 
         Worker worker = workerRepository.findFirstByUserAndId(user, request.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data pekerja tersebut tidak ada !"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker is not found !"));
 
         worker.setName(request.getName());
         worker.setPosition(request.getPosition());
@@ -93,7 +93,7 @@ public class WorkerService {
 
         Date timestamp = new Date(System.currentTimeMillis());
         worker.setModifiedBy(user.getUsername());
-        worker.setModifiedAt(timestamp.toString());
+        worker.setModifiedAt(LocalDateTime.now());
 
         workerRepository.save(worker);
 
@@ -112,7 +112,7 @@ public class WorkerService {
     @Transactional
     public void delete(User user, String workerId) {
         Worker worker = workerRepository.findFirstByUserAndId(user, workerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Data pekerja tersebut tidak ada !"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker is not found !"));
 
         workerRepository.delete(worker);
     }

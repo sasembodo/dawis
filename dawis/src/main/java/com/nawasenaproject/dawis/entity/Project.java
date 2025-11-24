@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -31,10 +34,10 @@ public class Project {
     private int status;
 
     @Column(name = "start_date")
-    private String startDate;
+    private LocalDate startDate;
 
     @Column(name = "finish_date")
-    private String finishDate;
+    private LocalDate finishDate;
 
     @Column(name = "is_active")
     private Boolean isActive;
@@ -43,13 +46,13 @@ public class Project {
     private String createdBy;
 
     @Column(name = "created_at")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "modified_by")
     private String modifiedBy;
 
     @Column(name = "modified_at")
-    private String modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @ManyToOne
     @JoinColumn(name = "username", referencedColumnName = "username")

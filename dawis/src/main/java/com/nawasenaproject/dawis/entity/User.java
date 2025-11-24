@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,13 +34,13 @@ public class User {
     private String createdBy;
 
     @Column(name = "created_at")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "modified_by")
     private String modifiedBy;
 
     @Column(name = "modified_at")
-    private String modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @OneToMany(mappedBy = "user")
     private List<Worker> workers = new ArrayList<>();

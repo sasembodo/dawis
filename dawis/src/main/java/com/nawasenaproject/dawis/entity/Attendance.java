@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,7 +20,7 @@ public class Attendance {
     @Id
     private String id;
 
-    private String date;
+    private LocalDate date;
 
     @Column(name = "special_wage")
     private int specialWage;
@@ -32,13 +35,13 @@ public class Attendance {
     private String createdBy;
 
     @Column(name = "created_at")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "modified_by")
     private String modifiedBy;
 
     @Column(name = "modified_at")
-    private String modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @Column(name = "paid_status")
     private String paidStatus;

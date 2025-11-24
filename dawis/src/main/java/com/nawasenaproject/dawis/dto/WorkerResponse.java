@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class WorkerResponse {
 
     private String nip;
 
-    private String recruitDate;
+    private LocalDate recruitDate;
 
     private String position;
 

@@ -7,8 +7,9 @@ import java.util.Objects;
 
 public class GenerateUtil {
 
-    public static String nipGenerator(String lastNipFromDb, long now) {
+    public static String nipGenerator(String lastNipFromDb) {
 
+        long now = System.currentTimeMillis();
         Locale locale = new Locale("id", "ID");
         SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM", locale);
         String monthName = monthFormat.format(now);
