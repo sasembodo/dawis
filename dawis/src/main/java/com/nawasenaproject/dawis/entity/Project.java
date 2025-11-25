@@ -1,5 +1,6 @@
 package com.nawasenaproject.dawis.entity;
 
+import com.nawasenaproject.dawis.enums.ProjectType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class Project {
 
     private String name;
 
-    private String type;
+    private ProjectType type;
 
     private String location;
 

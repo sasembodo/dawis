@@ -1,14 +1,15 @@
 package com.nawasenaproject.dawis.controller;
 
-import com.nawasenaproject.dawis.dto.CreateWorkerRequest;
-import com.nawasenaproject.dawis.dto.UpdateWorkerRequest;
-import com.nawasenaproject.dawis.dto.WebResponse;
-import com.nawasenaproject.dawis.dto.WorkerResponse;
+import com.nawasenaproject.dawis.dto.*;
 import com.nawasenaproject.dawis.entity.User;
 import com.nawasenaproject.dawis.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 public class WorkerController {
@@ -46,6 +47,51 @@ public class WorkerController {
                 .data(workerResponse)
                 .build();
     }
+
+    @GetMapping(
+            path = "/api/workers/search",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<List<WorkerResponse>> search(
+            User user,
+            @RequestParam(name = "start_date", required = false) String startDate,
+            @RequestParam(name = "end_date", required = false) String endDate,
+            @RequestParam(name = "position", required = false) String position,
+            @RequestParam(name = "min_wage", required = false) String minWage,
+            @RequestParam(name = "max_wage", required = false) String maxWage,
+            @RequestParam(name = "sort_by", required = false) String sortBy,
+            @RequestParam(name = "sort_dir", required = false) String sortDir,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+
+        SearchWorkerRequest request = SearchWorkerRequest.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .position(position)
+                .minWage(minWage)
+                .maxWage(maxWage)
+                .sortBy(sortBy)
+                .sortDir(sortDir)
+                .page(page)
+                .size(size)
+                .build();
+
+        Page<WorkerResponse> workerResponses = workerService.search(user, request);
+
+        return WebResponse.<List<WorkerResponse>>builder()
+                .rc(200)
+                .messages("OK")
+                .data(workerResponses.getContent())
+                .paging(PagingResponse.builder()
+                        .currentPage(0)
+                        .totalPage(2)
+                        .size(10)
+                        .build()
+                )
+                .build();
+    }
+
 
     @PatchMapping(
             path = "/api/workers/{workerId}",
