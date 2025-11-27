@@ -26,7 +26,7 @@ public class Project {
 
     private String name;
 
-    private ProjectType type;
+    private String type;
 
     private String location;
 

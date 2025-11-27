@@ -8,9 +8,7 @@ import com.nawasenaproject.dawis.entity.User;
 import com.nawasenaproject.dawis.entity.Worker;
 import com.nawasenaproject.dawis.repository.WorkerRepository;
 import com.nawasenaproject.dawis.specification.WorkerSpecification;
-import com.nawasenaproject.dawis.util.DateUtil;
 import com.nawasenaproject.dawis.util.GenerateUtil;
-import com.nawasenaproject.dawis.util.SafeConverterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -129,7 +127,6 @@ public class WorkerService {
         worker.setName(request.getName());
         worker.setPosition(request.getPosition());
         worker.setWage(request.getWage());
-        worker.setIsActive(true);
 
         worker.setModifiedBy(user.getUsername());
         worker.setModifiedAt(LocalDateTime.now());
@@ -145,8 +142,6 @@ public class WorkerService {
                 .wage(worker.getWage())
                 .build();
     }
-
-
 
     @Transactional
     public void delete(User user, String workerId) {

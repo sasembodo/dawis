@@ -1,7 +1,7 @@
 package com.nawasenaproject.dawis.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +12,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateWorkerRequest {
+public class UpdateProjectRequest {
 
     @NotBlank
+    @JsonIgnore
+    private String id;
+
     @Size(max = 100)
     private String name;
 
-    @NotBlank
     @Size(max = 255)
-    private String position;
+    private String location;
 
-    @NotNull
-    private int wage;
+    @Size(max = 255)
+    private String coordinates;
+
+    private Integer status;
 }

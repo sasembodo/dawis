@@ -1,7 +1,7 @@
 package com.nawasenaproject.dawis.util;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -36,4 +36,17 @@ public class GenerateUtil {
         // --- build final NIP ---
         return monthCode + "-" + yearCode + String.format("%04d", index);
     }
+
+    public static String projectCodeGenerator(String typeCode, Integer lastIndex) {
+
+        LocalDate currentDate = LocalDate.now();
+        String year = String.format("%02d", currentDate.getYear() % 100);
+        String month = String.format("%02d", currentDate.getMonthValue());
+
+        int nextIndex = (lastIndex == null) ? 1 : lastIndex + 1;
+        String indexFormatted = String.format("%03d", nextIndex);
+
+        return typeCode + "-" + year + "/" + month + "/" + indexFormatted;
+    }
+
 }

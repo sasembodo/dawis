@@ -1,5 +1,7 @@
 package com.nawasenaproject.dawis.enums;
 
+import java.util.Arrays;
+
 public enum ProjectType {
 
     BGN("BGN", "Konstruksi"),
@@ -23,26 +25,19 @@ public enum ProjectType {
     public String getDescription() {
         return description;
     }
-    public static ProjectType fromString(String value) {
-        if (value == null) return null;
 
-        value = value.trim();
-
-        if (value.contains("-")) {
-            value = value.substring(0, 3);
-        }
-
-        for (ProjectType type : values()) {
-            if (type.code.equalsIgnoreCase(value)) {
-                return type;
-            }
-        }
-
-        throw new IllegalArgumentException("Invalid project type: " + value);
+    public String getFull() {
+        return code + "-" + description;
     }
 
-    @Override
-    public String toString() {
-        return code + "-" + description;
+    public static ProjectType fromCode(String input) {
+        if (input == null) return null;
+
+        String codeOnly = input.contains("-") ? input.substring(0, 3) : input;
+
+        return Arrays.stream(values())
+                .filter(t -> t.code.equalsIgnoreCase(codeOnly))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid project type: " + input));
     }
 }
