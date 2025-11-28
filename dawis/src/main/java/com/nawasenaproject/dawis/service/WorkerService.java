@@ -87,6 +87,8 @@ public class WorkerService {
         Specification<Worker> spec = Specification.allOf(WorkerSpecification.belongsToUser(user.getUsername()));
 
         spec = spec
+                .and(WorkerSpecification.nameEquals(request.getName()))
+                .and(WorkerSpecification.nipEquals(request.getNip().toUpperCase()))
                 .and(WorkerSpecification.positionEquals(request.getPosition()))
                 .and(WorkerSpecification.recruitDateBetween(request.getStartDate(), request.getEndDate()))
                 .and(WorkerSpecification.wageBetween(request.getMinWage(), request.getMaxWage()));

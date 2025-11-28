@@ -10,21 +10,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchWorkerRequest {
+public class SearchProjectRequest {
+
+    private String code;
 
     private String name;
 
-    private String nip;
+    private String type;
 
-    private String startDate;
+    private String location;
 
-    private String endDate;
+    private String status;
 
-    private String position;
+    private String beginStartDate;
 
-    private String minWage;
+    private String endStartDate;
 
-    private String maxWage;
+    private String beginFinishDate;
+
+    private String endFinishDate;
 
     private String sortBy;
 

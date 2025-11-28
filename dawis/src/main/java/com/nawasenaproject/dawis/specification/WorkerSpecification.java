@@ -6,9 +6,26 @@ import com.nawasenaproject.dawis.util.SafeConverterUtil;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class WorkerSpecification {
+
+    public static Specification<Worker> nameEquals(String name) {
+        return (root, query, builder) -> {
+            if (name == null || name.isEmpty()) {
+                return builder.conjunction();
+            }
+            return builder.like(builder.lower(root.get("name")), "%" + name + "%" );
+        };
+    }
+
+    public static Specification<Worker> nipEquals(String nip) {
+        return (root, query, builder) -> {
+            if (nip == null || nip.isEmpty()) {
+                return null;
+            }
+            return builder.equal(builder.upper(root.get("nip")), nip);
+        };
+    }
 
     public static Specification<Worker> recruitDateBetween(String start, String end) {
         return (root, query, builder) -> {

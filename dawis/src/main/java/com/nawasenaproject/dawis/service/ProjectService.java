@@ -1,16 +1,17 @@
 package com.nawasenaproject.dawis.service;
 
-import com.nawasenaproject.dawis.dto.CreateProjectRequest;
-import com.nawasenaproject.dawis.dto.ProjectResponse;
-import com.nawasenaproject.dawis.dto.UpdateProjectRequest;
+import com.nawasenaproject.dawis.dto.*;
 import com.nawasenaproject.dawis.entity.Project;
 import com.nawasenaproject.dawis.entity.User;
 import com.nawasenaproject.dawis.entity.Worker;
 import com.nawasenaproject.dawis.enums.ProjectStatus;
 import com.nawasenaproject.dawis.enums.ProjectType;
 import com.nawasenaproject.dawis.repository.ProjectRepository;
+import com.nawasenaproject.dawis.specification.ProjectSpecification;
 import com.nawasenaproject.dawis.util.GenerateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -95,11 +98,52 @@ public class ProjectService {
                 .build();
     }
 
+    public Page<ProjectResponse> search(User user, SearchProjectRequest request){
+
+        Specification<Project> spec = Specification.allOf(ProjectSpecification.belongsToUser(user.getUsername()));
+
+        spec = spec
+                .and(ProjectSpecification.nameEquals(request.getName()))
+                .and(ProjectSpecification.codeEquals(request.getCode().toUpperCase()))
+                .and(ProjectSpecification.typeEquals(request.getType().toUpperCase()))
+                .and(ProjectSpecification.locationEquals(request.getLocation()))
+                .and(ProjectSpecification.statusEquals(request.getStatus()))
+                .and(ProjectSpecification.startDateBetween(request.getBeginStartDate(), request.getEndStartDate()))
+                .and(ProjectSpecification.finishDateBetween(request.getBeginFinishDate(), request.getBeginFinishDate()));
+
+        Sort sort = Sort.unsorted();
+
+        if (!Objects.equals(request.getSortBy(), "") && !Objects.equals(request.getSortDir(), "")) {
+            sort = request.getSortDir().equalsIgnoreCase("desc") ?
+                    Sort.by(request.getSortBy()).descending() :
+                    Sort.by(request.getSortBy()).ascending();
+        }
+
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+        Page<Project> projects = projectRepository.findAll(spec, pageable);
+        List<ProjectResponse> projectResponses = projects.getContent()
+                .stream()
+                .map(project -> ProjectResponse.builder()
+                        .id(project.getId())
+                        .code(project.getCode())
+                        .name(project.getName())
+                        .type(ProjectType.fromCode(project.getType()).getDescription())
+                        .location(project.getLocation())
+                        .coordinates(project.getCoordinates())
+                        .status(ProjectStatus.fromCode(project.getStatus()).getDescription())
+                        .startDate(project.getStartDate())
+                        .finishDate(project.getFinishDate())
+                        .build())
+                .toList();
+
+        return new PageImpl<>(projectResponses, pageable, projects.getTotalElements());
+
+    }
+
     @Transactional
     public ProjectResponse update(User user, UpdateProjectRequest request){
         validationService.validate(request);
 
-//        ProjectStatus statusEnum = ProjectStatus.fromCode(request.getStatus());
         LocalDate currentDate = LocalDate.now();
 
         Project project = projectRepository.findFirstByUserAndId(user, request.getId())

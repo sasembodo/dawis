@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -54,6 +53,8 @@ public class WorkerController {
     )
     public WebResponse<List<WorkerResponse>> search(
             User user,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "nip", required = false) String nip,
             @RequestParam(name = "start_date", required = false) String startDate,
             @RequestParam(name = "end_date", required = false) String endDate,
             @RequestParam(name = "position", required = false) String position,
@@ -66,6 +67,8 @@ public class WorkerController {
     ) {
 
         SearchWorkerRequest request = SearchWorkerRequest.builder()
+                .name(name)
+                .nip(nip)
                 .startDate(startDate)
                 .endDate(endDate)
                 .position(position)
@@ -91,7 +94,6 @@ public class WorkerController {
                 )
                 .build();
     }
-
 
     @PatchMapping(
             path = "/api/workers/{workerId}",

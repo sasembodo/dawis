@@ -22,14 +22,19 @@ public class Attendance {
 
     private LocalDate date;
 
-    @Column(name = "special_wage")
-    private int specialWage;
+    @Column(name = "special_wage", nullable = true)
+    private Integer specialWage;
 
-    private int mandays;
+    private Integer mandays;
 
-    private int bonuses;
+    @Column(nullable = true)
+    private Integer bonuses;
 
-    private int advances;
+    @Column(nullable = true)
+    private Integer advances;
+
+    @Column(name = "paid_status")
+    private Integer paidStatus;
 
     @Column(name = "created_by")
     private String createdBy;
@@ -42,9 +47,6 @@ public class Attendance {
 
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
-
-    @Column(name = "paid_status")
-    private String paidStatus;
 
     @ManyToOne
     @JoinColumn(name = "project_worker_id", referencedColumnName = "id")
