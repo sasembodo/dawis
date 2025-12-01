@@ -26,11 +26,11 @@ import java.util.UUID;
 @Service
 public class AttendanceService {
 
-    private ProjectRepository projectRepository;
-    private WorkerRepository workerRepository;
-    private ProjectWorkerRepository projectWorkerRepository;
-    private AttendanceRepository attendanceRepository;
-    private ValidationService validationService;
+    private final ProjectRepository projectRepository;
+    private final WorkerRepository workerRepository;
+    private final ProjectWorkerRepository projectWorkerRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final ValidationService validationService;
 
     @Autowired
     public AttendanceService(
@@ -66,13 +66,26 @@ public class AttendanceService {
                     return projectWorkerRepository.save(pw);
                 });
 
+        LocalDate attendanceDate = Optional.ofNullable(request.getDate())
+                        .map(DateUtil::stringToLocalDate)
+                        .orElse(LocalDate.now());
+
+        boolean exists = attendanceRepository.existsByProjectIdAndWorkerIdAndDate(
+                request.getProjectId(),
+                request.getWorkerId(),
+                attendanceDate
+        );
+
+        if (exists) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Attendance for this worker on this date already exists!"
+            );
+        }
+
         Attendance attendance = new Attendance();
         attendance.setId(UUID.randomUUID().toString());
-        attendance.setDate(
-                Optional.ofNullable(request.getDate())
-                        .map(DateUtil::stringToLocalDate)
-                        .orElse(LocalDate.now())
-        );
+        attendance.setDate(attendanceDate);
         attendance.setSpecialWage(request.getSpecialWage());
         attendance.setMandays(request.getMandays());
         attendance.setBonuses(request.getBonuses());

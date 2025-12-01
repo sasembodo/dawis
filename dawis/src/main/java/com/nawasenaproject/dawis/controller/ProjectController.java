@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 public class ProjectController {
 
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
     @Autowired
     public ProjectController(ProjectService projectService){

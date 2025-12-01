@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserArgumentResolver(UserRepository userRepository){
@@ -39,12 +39,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         if(token == null){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
-        log.info("TOKENNNN {}", token);
 
         User user = userRepository.findFirstByToken(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Unauthorized"));
-
-        log.info("USERRRRR {}", user);
 
         if (user.getTokenExpiredAt() < System.currentTimeMillis()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");

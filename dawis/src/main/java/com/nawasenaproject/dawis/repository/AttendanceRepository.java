@@ -12,11 +12,11 @@ import java.time.LocalDate;
 public interface AttendanceRepository extends JpaRepository<Attendance, String> {
 
     @Query("""
-        SELECT COUNT(a) > 0
-        FROM attendances a
-        JOIN project_worker pw
-        WHERE pw.project_id = :projectId
-        AND pw.worker_id = :workerId
+        SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END
+        FROM Attendance a
+        JOIN a.projectWorker pw
+        WHERE pw.project.id = :projectId
+        AND pw.worker.id = :workerId
         AND a.date = :date
     """)
     boolean existsByProjectIdAndWorkerIdAndDate(@Param("projectId") String projectId,

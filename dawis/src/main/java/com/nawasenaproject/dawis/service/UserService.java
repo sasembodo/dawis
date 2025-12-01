@@ -16,15 +16,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 @Slf4j
 @Service
 public class UserService {
 
-    private UserRepository userRepository;
-    private ValidationService validationService;
+    private final UserRepository userRepository;
+    private final ValidationService validationService;
 
     @Autowired
     public UserService(UserRepository userRepository, ValidationService validationService){
@@ -40,7 +39,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exist!");
         }
 
-        User user = new User();;
+        User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
         user.setCreatedBy(request.getUsername());

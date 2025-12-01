@@ -17,8 +17,8 @@ import java.util.UUID;
 @Service
 public class AuthService {
 
-    private UserRepository userRepository;
-    private ValidationService validationService;
+    private final UserRepository userRepository;
+    private final ValidationService validationService;
 
     @Autowired
     public AuthService(UserRepository userRepository, ValidationService validationService){

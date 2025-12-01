@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AttendanceController {
 
-    private AttendanceService attendanceService;
+    private final AttendanceService attendanceService;
 
     @Autowired
     public AttendanceController(AttendanceService attendanceService) {

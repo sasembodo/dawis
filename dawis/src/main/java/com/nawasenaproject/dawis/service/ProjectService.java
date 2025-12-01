@@ -26,8 +26,8 @@ import java.util.UUID;
 @Service
 public class ProjectService {
 
-    private ProjectRepository projectRepository;
-    private ValidationService validationService;
+    private final ProjectRepository projectRepository;
+    private final ValidationService validationService;
 
     @Autowired
     public ProjectService(ProjectRepository projectRepository, ValidationService validationService){

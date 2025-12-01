@@ -26,8 +26,8 @@ import java.util.UUID;
 @Service
 public class WorkerService {
 
-    private WorkerRepository workerRepository;
-    private ValidationService validationService;
+    private final WorkerRepository workerRepository;
+    private final ValidationService validationService;
 
     @Autowired
     public WorkerService(WorkerRepository workerRepository, ValidationService validationService){
