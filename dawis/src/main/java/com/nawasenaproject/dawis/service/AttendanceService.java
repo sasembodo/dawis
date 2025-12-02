@@ -16,6 +16,7 @@ import com.nawasenaproject.dawis.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ public class AttendanceService {
         this.validationService = validationService;
     }
 
+    @Transactional
     public AttendanceResponse create(User user, CreateAttendanceRequest request){
 
         validationService.validate(request);
@@ -131,8 +133,62 @@ public class AttendanceService {
                 .advances(attendance.getAdvances())
                 .paidStatus(paidStatusDesc)
                 .build();
+    }
 
+    @Transactional(readOnly = true)
+    public AttendanceResponse get(String attendanceId){
 
+        Attendance attendance = attendanceRepository
+                .findFirstById(attendanceId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Attendance is not found!")
+                );
+
+        Project project = attendance.getProjectWorker().getProject();
+        Worker worker = attendance.getProjectWorker().getWorker();
+
+        String paidStatusDesc = Optional.ofNullable(PaidStatus.fromCode(attendance.getPaidStatus()))
+                .map(PaidStatus::getDescription)
+                .orElse("Unknown");
+
+        String typeDesc = Optional.ofNullable(ProjectType.fromCode(project.getType()))
+                .map(ProjectType::getDescription)
+                .orElse("Unknown");
+
+        String statusDesc = Optional.ofNullable(ProjectStatus.fromCode(project.getStatus()))
+                .map(ProjectStatus::getDescription)
+                .orElse("Unknown");
+
+        return AttendanceResponse.builder()
+                .id(attendance.getId())
+                .project(ProjectResponse.builder()
+                        .id(project.getId())
+                        .code(project.getCode())
+                        .name(project.getName())
+                        .type(typeDesc)
+                        .location(project.getLocation())
+                        .coordinates(project.getCoordinates())
+                        .status(statusDesc)
+                        .startDate(project.getStartDate())
+                        .finishDate(project.getFinishDate())
+                        .build()
+                )
+                .worker(WorkerResponse.builder()
+                        .id(worker.getId())
+                        .name(worker.getName())
+                        .nip(worker.getNip())
+                        .recruitDate(worker.getRecruitDate())
+                        .position(worker.getPosition())
+                        .wage(worker.getWage())
+                        .build()
+                )
+                .date(attendance.getDate())
+                .specialWage(attendance.getSpecialWage())
+                .mandays(attendance.getMandays())
+                .bonuses(attendance.getBonuses())
+                .advances(attendance.getAdvances())
+                .paidStatus(paidStatusDesc)
+                .build();
     }
 
 }

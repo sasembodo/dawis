@@ -7,9 +7,7 @@ import com.nawasenaproject.dawis.entity.User;
 import com.nawasenaproject.dawis.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AttendanceController {
@@ -28,6 +26,19 @@ public class AttendanceController {
     )
     public WebResponse<AttendanceResponse> create(User user, @RequestBody CreateAttendanceRequest request) {
         AttendanceResponse response = attendanceService.create(user, request);
+        return WebResponse.<AttendanceResponse>builder()
+                .rc(200)
+                .messages("OK")
+                .data(response)
+                .build();
+    }
+
+    @GetMapping(
+            path = "/api/attendances/{attendanceId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<AttendanceResponse> get(@PathVariable String attendanceId) {
+        AttendanceResponse response = attendanceService.get(attendanceId);
         return WebResponse.<AttendanceResponse>builder()
                 .rc(200)
                 .messages("OK")
