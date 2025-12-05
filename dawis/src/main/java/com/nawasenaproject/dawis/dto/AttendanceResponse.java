@@ -19,7 +19,7 @@ public class AttendanceResponse {
 
     private Integer specialWage;
 
-    private Integer mandays;
+    private Double mandays;
 
     private Integer bonuses;
 

@@ -2,6 +2,7 @@ package com.nawasenaproject.dawis.controller;
 
 import com.nawasenaproject.dawis.dto.AttendanceResponse;
 import com.nawasenaproject.dawis.dto.CreateAttendanceRequest;
+import com.nawasenaproject.dawis.dto.UpdateAttendanceRequest;
 import com.nawasenaproject.dawis.dto.WebResponse;
 import com.nawasenaproject.dawis.entity.User;
 import com.nawasenaproject.dawis.service.AttendanceService;
@@ -43,6 +44,34 @@ public class AttendanceController {
                 .rc(200)
                 .messages("OK")
                 .data(response)
+                .build();
+    }
+
+    @PatchMapping(
+            path = "/api/attendances/{attendanceId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<AttendanceResponse> update(User user,
+                                                  @RequestBody UpdateAttendanceRequest request,
+                                                  @PathVariable("attendanceId") String attendanceId) {
+        AttendanceResponse response = attendanceService.update(user, request, attendanceId);
+        return WebResponse.<AttendanceResponse>builder()
+                .rc(200)
+                .messages("OK")
+                .data(response)
+                .build();
+    }
+
+    @DeleteMapping(
+            path = "/api/attendances/{attendanceId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<String> delete(@PathVariable("attendanceId") String attendanceId) {
+        attendanceService.delete(attendanceId);
+        return WebResponse.<String>builder()
+                .rc(200)
+                .messages("OK")
                 .build();
     }
 }

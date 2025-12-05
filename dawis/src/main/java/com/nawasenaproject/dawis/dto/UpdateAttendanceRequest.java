@@ -1,16 +1,12 @@
 package com.nawasenaproject.dawis.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class CreateAttendanceRequest {
+@Getter
+@Setter
+public class UpdateAttendanceRequest {
 
     @Pattern(
             regexp = "^\\d{4}-\\d{2}-\\d{2}$",
@@ -31,10 +27,7 @@ public class CreateAttendanceRequest {
     @Min(value = 0, message = "Advances cannot be negative")
     private Integer advances;
 
-    @NotBlank(message = "Project ID cannot found !")
-    private String projectId;
-
-    @NotBlank(message = "Worker ID cannot found !")
-    private String workerId;
-
+    @Min(value = 1)
+    @Max(value = 2)
+    private Integer paidStatus;
 }

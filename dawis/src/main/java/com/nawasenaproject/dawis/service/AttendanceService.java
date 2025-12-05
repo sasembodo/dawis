@@ -1,9 +1,6 @@
 package com.nawasenaproject.dawis.service;
 
-import com.nawasenaproject.dawis.dto.AttendanceResponse;
-import com.nawasenaproject.dawis.dto.CreateAttendanceRequest;
-import com.nawasenaproject.dawis.dto.ProjectResponse;
-import com.nawasenaproject.dawis.dto.WorkerResponse;
+import com.nawasenaproject.dawis.dto.*;
 import com.nawasenaproject.dawis.entity.*;
 import com.nawasenaproject.dawis.enums.PaidStatus;
 import com.nawasenaproject.dawis.enums.ProjectStatus;
@@ -189,6 +186,90 @@ public class AttendanceService {
                 .advances(attendance.getAdvances())
                 .paidStatus(paidStatusDesc)
                 .build();
+    }
+
+    @Transactional
+    public AttendanceResponse update(User user, UpdateAttendanceRequest request, String attendanceId) {
+
+        validationService.validate(request);
+
+        Attendance attendance = attendanceRepository
+                .findFirstById(attendanceId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Attendance is not found!")
+                );
+
+        ProjectWorker projectWorker = attendance.getProjectWorker();
+        Project project = projectWorker.getProject();
+        Worker worker = projectWorker.getWorker();
+
+        if (request.getDate() != null) {
+            attendance.setDate(DateUtil.stringToLocalDate(request.getDate()));
+        }
+
+        if (request.getSpecialWage() > 0) {
+            attendance.setSpecialWage(request.getSpecialWage());
+        }
+
+        if (request.getMandays() != null) {
+            attendance.setMandays(request.getMandays());
+        }
+
+        if (request.getBonuses() != null) {
+            attendance.setBonuses(request.getBonuses());
+        }
+
+        if (request.getAdvances() != null) {
+            attendance.setAdvances(request.getAdvances());
+        }
+
+        if (request.getPaidStatus() != null) {
+            attendance.setPaidStatus(request.getPaidStatus());
+        }
+
+        attendance.setModifiedBy(user.getUsername());
+        attendance.setModifiedAt(LocalDateTime.now());
+
+        attendanceRepository.save(attendance);
+
+        return AttendanceResponse.builder()
+                .id(attendance.getId())
+                .date(attendance.getDate())
+                .specialWage(attendance.getSpecialWage())
+                .mandays(attendance.getMandays())
+                .bonuses(attendance.getBonuses())
+                .advances(attendance.getAdvances())
+                .paidStatus(PaidStatus.fromCode(attendance.getPaidStatus()).getDescription())
+
+                .project(ProjectResponse.builder()
+                        .id(project.getId())
+                        .code(project.getCode())
+                        .name(project.getName())
+                        .type(ProjectType.fromCode(project.getType()).getDescription())
+                        .location(project.getLocation())
+                        .coordinates(project.getCoordinates())
+                        .status(ProjectStatus.fromCode(project.getStatus()).getDescription())
+                        .startDate(project.getStartDate())
+                        .finishDate(project.getFinishDate())
+                        .build())
+
+                .worker(WorkerResponse.builder()
+                        .id(worker.getId())
+                        .name(worker.getName())
+                        .nip(worker.getNip())
+                        .recruitDate(worker.getRecruitDate())
+                        .position(worker.getPosition())
+                        .wage(worker.getWage())
+                        .build())
+
+                .build();
+    }
+
+    public void delete(String attendanceId){
+        Attendance attendance = attendanceRepository.findFirstById(attendanceId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attendance is not found !"));
+
+        attendanceRepository.delete(attendance);
     }
 
 }

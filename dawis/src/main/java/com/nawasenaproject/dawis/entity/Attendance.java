@@ -25,7 +25,7 @@ public class Attendance {
     @Column(name = "special_wage", nullable = true)
     private Integer specialWage;
 
-    private Integer mandays;
+    private Double mandays;
 
     @Column(nullable = true)
     private Integer bonuses;
