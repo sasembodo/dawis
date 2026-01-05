@@ -129,4 +129,32 @@ public class ProjectController {
                 .build();
     }
 
+    @GetMapping(
+            path = "/api/projects/{projectId}/report",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<ProjectReportResponse> report(
+            User user,
+            @PathVariable("projectId") String projectId,
+            @RequestParam(name = "start_date", required = false) String startDate,
+            @RequestParam(name = "end_date", required = false) String endDate,
+            @RequestParam(name = "worker_nip", required = false) String workerNip,
+            @RequestParam(name = "sort_by", required = false) String sortBy,
+            @RequestParam(name = "sort_dir", required = false) String sortDir,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+
+        ProjectReportRequest request = ProjectReportRequest.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .workerNip(workerNip)
+                .sortBy(sortBy)
+                .sortDir(sortDir)
+                .page(page)
+                .size(size)
+                .build();
+
+        ProjectReportResponse response = projectService.report(user, projectId, request);
+        return WebResponse.<ProjectReportResponse>builder().data(response).build();
+    }
 }

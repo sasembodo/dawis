@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -50,6 +52,6 @@ public class Worker {
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
 
-    @OneToOne(mappedBy = "worker")
-    private ProjectWorker projectWorker;
+    @OneToMany(mappedBy = "worker")
+    private List<ProjectWorker> projectWorkers = new ArrayList<>();
 }

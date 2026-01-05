@@ -19,11 +19,11 @@ import java.util.List;
     @Id
     private String id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "project_id", referencedColumnName = "id")
     private Project project;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "worker_id", referencedColumnName = "id")
     private Worker worker;
 

@@ -9,6 +9,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -59,6 +61,6 @@ public class Project {
     @JoinColumn(name = "username", referencedColumnName = "username")
     private User user;
 
-    @OneToOne(mappedBy = "project")
-    private ProjectWorker projectWorker;
+    @OneToMany(mappedBy = "project")
+    private List<ProjectWorker> projectWorkers = new ArrayList<>();
 }

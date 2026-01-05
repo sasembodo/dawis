@@ -125,4 +125,33 @@ public class WorkerController {
                 .build();
     }
 
+    @GetMapping(
+            path = "/api/workers/{workerId}/report",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<WorkerReportResponse> report(
+            User user,
+            @PathVariable("workerId") String workerId,
+            @RequestParam(name = "start_date", required = false) String startDate,
+            @RequestParam(name = "end_date", required = false) String endDate,
+            @RequestParam(name = "project_code", required = false) String projectCode,
+            @RequestParam(name = "sort_by", required = false) String sortBy,
+            @RequestParam(name = "sort_dir", required = false) String sortDir,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+
+        WorkerReportRequest request = WorkerReportRequest.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .projectCode(projectCode)
+                .sortBy(sortBy)
+                .sortDir(sortDir)
+                .page(page)
+                .size(size)
+                .build();
+
+        WorkerReportResponse response = workerService.report(user, workerId, request);
+        return WebResponse.<WorkerReportResponse>builder().data(response).build();
+    }
+
 }

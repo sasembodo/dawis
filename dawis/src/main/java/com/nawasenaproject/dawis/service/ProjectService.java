@@ -1,13 +1,18 @@
 package com.nawasenaproject.dawis.service;
 
 import com.nawasenaproject.dawis.dto.*;
+import com.nawasenaproject.dawis.entity.Attendance;
 import com.nawasenaproject.dawis.entity.Project;
 import com.nawasenaproject.dawis.entity.User;
 import com.nawasenaproject.dawis.entity.Worker;
+import com.nawasenaproject.dawis.enums.PaidStatus;
 import com.nawasenaproject.dawis.enums.ProjectStatus;
 import com.nawasenaproject.dawis.enums.ProjectType;
+import com.nawasenaproject.dawis.repository.AttendanceRepository;
 import com.nawasenaproject.dawis.repository.ProjectRepository;
 import com.nawasenaproject.dawis.specification.ProjectSpecification;
+import com.nawasenaproject.dawis.specification.ReportSpecification;
+import com.nawasenaproject.dawis.util.DateUtil;
 import com.nawasenaproject.dawis.util.GenerateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -19,19 +24,20 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final AttendanceRepository attendanceRepository;
     private final ValidationService validationService;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, ValidationService validationService){
+    public ProjectService(ProjectRepository projectRepository, AttendanceRepository attendanceRepository, ValidationService validationService){
         this.projectRepository = projectRepository;
+        this.attendanceRepository = attendanceRepository;
         this.validationService = validationService;
     }
 
@@ -201,4 +207,120 @@ public class ProjectService {
 
         projectRepository.delete(project);
     }
+
+    @Transactional(readOnly = true)
+    public ProjectReportResponse report(User user, String projectId, ProjectReportRequest request) {
+
+        Project project = projectRepository.findFirstByUserAndId(user, projectId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Project is not found"));
+
+        LocalDate start = DateUtil.stringToLocalDate(request.getStartDate());
+        LocalDate end = DateUtil.stringToLocalDate(request.getEndDate());
+
+        Specification<Attendance> spec = Specification.allOf(
+                ReportSpecification.belongsToUser(user.getUsername()),
+                ReportSpecification.belongsToProject(projectId),
+                ReportSpecification.dateBetween(start, end),
+                ReportSpecification.workerNipEquals(request.getWorkerNip())
+        );
+
+        List<Attendance> attendances = attendanceRepository.findAll(spec);
+
+        String workerNip = request.getWorkerNip();
+        if (workerNip != null && workerNip.isBlank()) {
+            workerNip = null;
+        }
+
+        Map<String, Object[]> aggregateMap =
+                attendanceRepository.aggregateByWorker(
+                                projectId,
+                                user.getUsername(),
+                                workerNip,
+                                start,
+                                end,
+                                PaidStatus.UNPAID.getCode()
+                        )
+                        .stream()
+                        .collect(Collectors.toMap(
+                                r -> (String) r[0],
+                                r -> r
+                        ));
+
+
+        Map<Worker, List<Attendance>> byWorker =
+                attendances.stream()
+                        .collect(Collectors.groupingBy(
+                                att -> att.getProjectWorker().getWorker()
+                        ));
+
+        List<ProjectReportWorkersResponse> workers = new ArrayList<>();
+        int projectTotalUnpaid = 0;
+
+        for (Map.Entry<Worker, List<Attendance>> entry : byWorker.entrySet()) {
+
+            Worker worker = entry.getKey();
+            List<Attendance> workerAttendances = entry.getValue();
+
+            Object[] agg = aggregateMap.get(worker.getId());
+
+            double totalManday = agg != null ? ((Number) agg[1]).doubleValue() : 0;
+            int totalBonus = agg != null ? ((Number) agg[2]).intValue() : 0;
+            int totalAdvances = agg != null ? ((Number) agg[3]).intValue() : 0;
+            int totalUnpaid = agg != null ? ((Number) agg[4]).intValue() : 0;
+
+            int totalSpecialWage = workerAttendances.stream()
+                    .mapToInt(a -> a.getSpecialWage() != null ? a.getSpecialWage() : 0)
+                    .sum();
+
+            int totalWage = (int) Math.round(worker.getWage() * totalManday)
+                    + totalSpecialWage;
+
+            projectTotalUnpaid += totalUnpaid;
+
+            List<ProjectReportWorkersAttendancesResponse> attendanceResponses =
+                    workerAttendances.stream()
+                            .map(a -> ProjectReportWorkersAttendancesResponse.builder()
+                                    .id(a.getId())
+                                    .date(a.getDate())
+                                    .specialWage(a.getSpecialWage())
+                                    .mandays(a.getMandays())
+                                    .bonuses(a.getBonuses())
+                                    .advances(a.getAdvances())
+                                    .paidStatus(PaidStatus.fromCode(a.getPaidStatus()).getDescription())
+                                    .build()
+                            )
+                            .toList();
+
+            workers.add(ProjectReportWorkersResponse.builder()
+                    .id(worker.getId())
+                    .name(worker.getName())
+                    .nip(worker.getNip())
+                    .recruitDate(worker.getRecruitDate())
+                    .position(worker.getPosition())
+                    .wage(worker.getWage())
+                    .totalManday(totalManday)
+                    .totalBonus(totalBonus)
+                    .totalAdvances(totalAdvances)
+                    .totalWage(totalWage)
+                    .totalUnpaid(totalUnpaid)
+                    .attendances(attendanceResponses)
+                    .build());
+        }
+
+        return ProjectReportResponse.builder()
+                .id(project.getId())
+                .code(project.getCode())
+                .name(project.getName())
+                .type(project.getType())
+                .location(project.getLocation())
+                .coordinates(project.getCoordinates())
+                .status(ProjectStatus.fromCode(project.getStatus()).getDescription())
+                .startDate(project.getStartDate())
+                .finishDate(project.getFinishDate())
+                .totalUnpaid(projectTotalUnpaid)
+                .workers(workers)
+                .build();
+    }
+
 }
