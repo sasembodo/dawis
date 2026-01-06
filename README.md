@@ -1,5 +1,9 @@
 # DAWIS
 
+<p align="center">
+    <img src="./dawis/src/main/resources/static/image/dawis-logo.png" height="200px" width="550px">  
+</p>
+
 ## Introduction
 
 DAWIS is an attendance and wage management system for daily workers.
