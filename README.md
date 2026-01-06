@@ -58,6 +58,11 @@ spring.datasource.password={your_db_password}
 ./mvnw spring-boot:run
 ```
 
+
+## API Reference (Postman)
+
+[DAWIS App Collection](https://web.postman.co/workspace/My-Workspace~59fc4651-2f78-4cc5-8feb-bcc4cb799e3b/collection/15433848-1cbd82a8-d11a-4e0f-a04c-65c99a36c9bc?action=share&source=copy-link&creator=15433848)
+
     
 ## Authors
 
