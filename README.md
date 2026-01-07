@@ -6,16 +6,25 @@
 
 ## Introduction
 
-DAWIS is an attendance and wage management system for daily workers.
+DAWIS is an attendance and wage management system for casual workers.
 
 
 
+## Features
+
+- Syncronized worker data at some project
+- Worker attendance report
+- Project attendance report
+- Total wages to be paid to each worker
+- Total wages to be paid on each project
 
 
 ## Tools
 - Intellij IDEA
 - pgAdmin 4
 - Postman
+
+
 ## Tech Stack
 
 - Java
